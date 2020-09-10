@@ -56,4 +56,19 @@ class NullConnector extends Connector {
   void disconnect() {
     //
   }
+
+  bool isConnected() {
+  }
+
+  @override
+  Function connecting(Function callback) {
+  }
+
+  @override
+  Function connected(Function callback) {
+  }
+
+  @override
+  Function disconnected(Function callback) {
+  }
 }

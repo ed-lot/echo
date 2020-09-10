@@ -109,4 +109,20 @@ class SocketIoConnector extends Connector {
   void disconnect() {
     this.socket.disconnect();
   }
+
+  @override
+  bool isConnected() {
+  }
+
+  @override
+  Function connecting(Function callback) {
+  }
+
+  @override
+  Function connected(Function callback) {
+  }
+
+  @override
+  Function disconnected(Function callback) {
+  }
 }

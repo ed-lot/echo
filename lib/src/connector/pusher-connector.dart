@@ -1,7 +1,4 @@
 import 'package:laravel_echo/src/connector/connector.dart';
-import 'package:laravel_echo/src/channel/channel.dart';
-import 'package:laravel_echo/src/channel/private-channel.dart';
-import 'package:laravel_echo/src/channel/presence-channel.dart';
 import 'package:laravel_echo/src/channel/pusher-channel.dart';
 import 'package:laravel_echo/src/channel/pusher-private-channel.dart';
 import 'package:laravel_echo/src/channel/pusher-presence-channel.dart';
@@ -21,9 +18,10 @@ class PusherConnector extends Connector {
   /// Create a fresh Pusher connection.
   @override
   void connect() {
-    this.pusher = this.options['client'];
-
-    return this.pusher;
+    if(this.pusher == null){
+      this.pusher = this.options['client'];
+    }
+    this.pusher.connect();
   }
 
   /// Listen for an event on a channel instance.
@@ -96,5 +94,25 @@ class PusherConnector extends Connector {
   @override
   void disconnect() {
     this.pusher.disconnect();
+  }
+
+  @override
+  bool isConnected() {
+    return this.pusher.isConnected();
+  }
+
+  @override
+  Function connecting(Function callback) {
+    return this.pusher.connecting(callback);
+  }
+
+  @override
+  Function connected(Function callback) {
+    return this.pusher.connected(callback);
+  }
+
+  @override
+  Function disconnected(Function callback) {
+    return this.pusher.disconnected(callback);
   }
 }

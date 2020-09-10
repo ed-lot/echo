@@ -4,139 +4,75 @@ Basically, this package is port of official [Laravel Echo javascript library](ht
 
 API is same as official Echo package, so everything in [Official documentation](https://laravel.com/docs/5.7/broadcasting) should work.
 
-Three connectors available:
-- [x] [socket.io](#socket.io)
-- [x] [Pusher](#pusher)
-- [x] Null
+Three connectors available: [socket.io](#socket.io), [Pusher](#pusher), [Null](#null).
 
-<img width="300" alt="Screen Shot 2019-03-17 at 9 37 50 PM" src="https://user-images.githubusercontent.com/7093483/54494522-f15eef80-48fc-11e9-8fc1-e986bc004360.png">
+I use it with [laravel-websockets](https://github.com/beyondcode/laravel-websockets) server, not testing with official pusher server or socket.io 
 
-## Getting started
+## Usage
 
-### socket.io
-
-To use with `socket.io`, you need to install [socket_io_client](https://pub.dartlang.org/packages/socket_io_client) for your Flutter app.
+To use with __Pusher__, you need to clone my [pusher_dart](https://github.com/ed-lot/pusher_dart) client and link it in you Flutter app.
 
 In your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
   ...
-  socket_io_client: ^0.9.1
+  pusher_dart:
+      path: ../plugins/pusher_dart
   laravel_echo:
+      path: ../plugins/echo
 ```
 
-import `socket_io_client`
+Init code exemple :
+
 ```dart
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+    import 'package:pusher_dart/Pusher.dart';
+    //
+    Pusher pusher = Pusher(
+      "YOUR_PUSHER_APP_KEY",
+      PusherOptions(
+        host: "YOUR_DOMAIN",
+        port: "YOUR_PORT",
+        authEndpoint: "YOUR_AUTH_ENDPOINT",
+        cluster: "YOUR_PUSHER_CLUSTER",
+        encrypted: false,
+        auth: PusherAuth(headers: {
+        "Content-Type": "application/json",
+        "authorization": "Bearer token",
+        }),
+        autoConnect: false,
+        pingInterval: Duration(seconds: 5)),
+    );
+
+    Echo echo = new Echo({'broadcaster': 'pusher', 'client': pusher});
+    echo.connect();
+    echo.connecting((_) {
+      // Connecting !
+    });
+    echo.connected((_) {
+      // Connected !
+    });
+    echo.disconnected((_) {
+      // Disconnected !
+    });
+```
+Exemple of presence channel :
+```dart
+    echo.join('presence.1').here((dynamicMembers) {
+      List<Member> members = List<Member>.from(dynamicMembers);
+      // Users connected
+    }).joining((dynamicMember) {
+      Member member = dynamicMember;
+      // New user connected 
+    }).leaving((dynamicMember) {
+      Member member = dynamicMember;
+      // User disconnected
+    });
 ```
 
-usage
+Exemple of private channel (with notification) :
 ```dart
-// Create echo instance
-Echo echo = new Echo({
-  'broadcaster': 'socket.io',
-  'client': IO.io,
-});
-
-// Listening public channel
-echo.channel('public-channel').listen('PublicEvent', (e) {
-  print(e);
-});
-
-// Listening private channel
-// Needs auth. See details how to authorize channel below in guides
-echo.private('private-channel').listen('PrivateEvent', (e) {
-  print(e);
-});
-
-// Listening presence channel
-// Needs auth. See details how to authorize channel below in guides
-echo.join('presence-channel')
-  .here((users) {
-    print(users);
-  }).joining((user) {
-    print(user);
-  }).leaving((user) {
-    print(user);
-  }).listen('PresenceEvent', (e) {
-    print(e);
+  echo.private("App.User.1").notification((notificationJson) {
+    // Your code
   });
-
-// Accessing socket instance
-echo.socket.on('connect', (_) => print('connected'));
-echo.socket.on('disconnect', (_) => print('disconnected'));
 ```
-
-### Pusher
-
-To use with __Pusher__, you need to install [flutter_pusher_client](https://pub.dartlang.org/packages/flutter_pusher_client) for you Flutter app.
-
-In your `pubspec.yaml` file:
-
-```yaml
-dependencies:
-  ...
-  flutter_pusher_client: ^0.3.1
-  laravel_echo:
-```
-
-import `flutter_pusher_client`
-```dart
-import 'package:flutter_pusher_client/flutter_pusher.dart';
-```
-
-```dart
-var options = PusherOptions(host: '10.0.2.2', port: 6001, encrypted: false);
-FlutterPusher pusher = FlutterPusher('app', options, enableLogging: true);
-
-Echo echo = new Echo({
-  'broadcaster': 'pusher',
-  'client': pusher,
-});
-
-echo.channel('public-channel').listen('PublicEvent', (e) {
-  print(e);
-});
-
-socket.on('connect', (_) => print('connect'));
-socket.on('disconnect', (_) => print('disconnect'));
-```
-
-## Guide
-
-### Options
-
-|Option|Description|Default|
-|---|---|---|
-|auth| | |
-|authEndpoint| |/broadcasting/auth|
-|broadcaster| |socket.io|
-|crsfToken| | |
-|host|Socket host|http://localhost:6001 |
-|namespace|Event namespace|App.Events|
-|...|Any other options, passed as socket params| |
-
-### Authorize private channels
-
-To authorize channel requests we use [Laravel Passport](https://laravel.com/docs/5.7/passport)
-
-In our `BroadcastServiceProvider.php` we need to enable
-```php
-Broadcast::routes(['middleware' => ['auth:api']]);
-```
-
-then, when creating `Echo` instance include `Authorization` header with bearer token
-```dart
-echo = new Echo({
-  'broadcaster': 'socket.io',
-  'client': socket,
-  'auth': {
-    'headers': {
-        'Authorization': 'Bearer $token'
-    }
-  }
-});
-```
-
-Package by [Kakajan SH](http://kakajan.sh)

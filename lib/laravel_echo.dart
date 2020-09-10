@@ -33,14 +33,18 @@ class Echo {
 
   /// Create a new connection.
   void connect() {
-    if (this.options['broadcaster'] == 'pusher') {
-      this.connector = new PusherConnector(this.options);
-    } else if (this.options['broadcaster'] == 'socket.io') {
-      this.connector = new SocketIoConnector(this.options);
-    } else if (this.options['broadcaster'] == 'null') {
-      this.connector = new NullConnector(this.options);
-    } else if (options['broadcaster'] is Function) {
-      this.connector = options['broadcaster'](options);
+    if(this.connector == null){
+      if (this.options['broadcaster'] == 'pusher') {
+        this.connector = new PusherConnector(this.options);
+      } else if (this.options['broadcaster'] == 'socket.io') {
+        this.connector = new SocketIoConnector(this.options);
+      } else if (this.options['broadcaster'] == 'null') {
+        this.connector = new NullConnector(this.options);
+      } else if (options['broadcaster'] is Function) {
+        this.connector = options['broadcaster'](options);
+      }
+    }else{
+      this.connector.connect();
     }
   }
 
@@ -77,5 +81,21 @@ class Echo {
   /// Get the Socket ID for the connection.
   String sockedId() {
     return this.connector.socketId();
+  }
+
+  bool isConnected() {
+    return this.connector.isConnected();
+  }
+
+  Function connecting(Function callback) {
+    return this.connector.connecting(callback);
+  }
+
+  Function connected(Function callback) {
+    return this.connector.connected(callback);
+  }
+
+  Function disconnected(Function callback) {
+    return this.connector.disconnected(callback);
   }
 }

@@ -70,4 +70,13 @@ abstract class Connector {
 
   /// Disconnect from the Echo server.
   void disconnect();
+
+  /// Disconnect from the Echo server.
+  bool isConnected();
+
+  Function connecting(Function callback);
+
+  Function connected(Function callback);
+
+  Function disconnected(Function callback);
 }
