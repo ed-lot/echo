@@ -23,12 +23,11 @@ class PusherChannel extends Channel {
   dynamic subcription;
 
   /// Create a new class instance.
-  PusherChannel(dynamic pusher, String name, dynamic options) {
-    this.name = name;
-    this.pusher = pusher;
-    this.options = options;
-    this.eventFormatter = new EventFormatter(this.options['namespace']);
-
+  PusherChannel({required dynamic pusher, required String name, required dynamic options})
+      : this.name = name,
+        this.pusher = pusher,
+        this.options = options,
+        this.eventFormatter = new EventFormatter(options['namespace']) {
     this.subscribe();
   }
 
@@ -61,7 +60,7 @@ class PusherChannel extends Channel {
     } else {
       this.subcription.bind(event, callback);
     }
-    
+
     return this;
   }
 }

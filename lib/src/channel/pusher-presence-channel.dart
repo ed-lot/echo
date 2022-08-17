@@ -5,7 +5,7 @@ import 'package:laravel_echo/src/channel/presence-channel.dart';
 /// This class represents a Pusher presence channel.
 ///
 class PusherPresenceChannel extends PusherChannel implements PresenceChannel {
-  PusherPresenceChannel(pusher, String name, options) : super(pusher, name, options);
+  PusherPresenceChannel(pusher, String name, options) : super(pusher: pusher, name: name, options: options);
 
   /// Register a callback to be called anytime the member list changes.
   @override

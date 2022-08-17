@@ -18,7 +18,7 @@ class PusherConnector extends Connector {
   /// Create a fresh Pusher connection.
   @override
   void connect() {
-    if(this.pusher == null){
+    if (this.pusher == null) {
       this.pusher = this.options['client'];
     }
     this.pusher.connect();
@@ -33,7 +33,7 @@ class PusherConnector extends Connector {
   @override
   PusherChannel channel(String name) {
     if (this.channels[name] == null) {
-      this.channels[name] = new PusherChannel(this.pusher, name, this.options);
+      this.channels[name] = new PusherChannel(pusher: this.pusher, name: name, options: this.options);
     }
 
     return this.channels[name];

@@ -5,8 +5,7 @@ import 'package:laravel_echo/src/channel/private-channel.dart';
 /// This class represents a Pusher private channel.
 ///
 class PusherPrivateChannel extends PusherChannel implements PrivateChannel {
-  PusherPrivateChannel(pusher, String name, options)
-      : super(pusher, name, options);
+  PusherPrivateChannel(pusher, String name, options) : super(pusher: pusher, name: name, options: options);
 
   /// Trigger client event on the channel.
   PusherPrivateChannel whisper(String eventName, dynamic data) {

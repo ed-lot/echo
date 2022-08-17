@@ -3,9 +3,7 @@ library laravel_echo;
 import 'package:laravel_echo/src/channel/channel.dart';
 import 'package:laravel_echo/src/channel/private-channel.dart';
 import 'package:laravel_echo/src/channel/presence-channel.dart';
-import 'package:laravel_echo/src/connector/socketio-connector.dart';
 import 'package:laravel_echo/src/connector/pusher-connector.dart';
-import 'package:laravel_echo/src/connector/null-connector.dart';
 
 ///
 /// This class is the primary API for interacting with broadcasting.
@@ -21,8 +19,7 @@ class Echo {
   Map<String, dynamic> options;
 
   /// Create a new class instance.
-  Echo(dynamic options) {
-    this.options = options;
+  Echo({required dynamic options}) : this.options = options {
     this.connect();
   }
 
@@ -33,17 +30,13 @@ class Echo {
 
   /// Create a new connection.
   void connect() {
-    if(this.connector == null){
+    if (this.connector == null) {
       if (this.options['broadcaster'] == 'pusher') {
         this.connector = new PusherConnector(this.options);
-      } else if (this.options['broadcaster'] == 'socket.io') {
-        this.connector = new SocketIoConnector(this.options);
-      } else if (this.options['broadcaster'] == 'null') {
-        this.connector = new NullConnector(this.options);
-      } else if (options['broadcaster'] is Function) {
+      }  else if (options['broadcaster'] is Function) {
         this.connector = options['broadcaster'](options);
       }
-    }else{
+    } else {
       this.connector.connect();
     }
   }
